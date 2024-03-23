@@ -1,0 +1,10 @@
+#map {
+    width: 100%; /* Make the map width take up 100% of the parent container width */
+    height: 800px; /* Set a fixed height or use viewport units (e.g., vh) */
+}
+
+@media (max-width: 768px) {
+    #map {
+        height: 780px; /* Adjust the height for smaller screens */
+    }
+}

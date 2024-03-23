@@ -14,19 +14,20 @@ function handleFileUpload() {
 function displayDataOnMap(data) {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2ZXlub3YiLCJhIjoiY2xrajh3ZXVhMDJyazNlbnRuYWZmZWwzaSJ9.hh5Hk6_pBV84NEUVNPvMXQ'; 
     var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-98.5795, 39.8283], // Centered on the US
-        zoom: 3
+        container: 'map', // The ID of the map container
+        style: 'mapbox://styles/mapbox/streets-v11', // The map style to use
+        center: [-77.9447, 34.2257], // Center the map on Wilmington, NC
+        zoom: 10 // Adjust zoom level based on your needs
     });
 
     var geocoder = new google.maps.Geocoder();
-
+    var count = 0
     data.forEach(row => {
         if (row.ADDRESS && row['WEEKLY FEE']) {
+            count += 1
+            console.log(count)
             const address = row.ADDRESS;
-            const color = row['WEEKLY FEE'] === '$0' ? 'grey' : 'red';
-
+            const color = row['WEEKLY FEE'] === '$0.00' ? 'grey' : 'red';
             geocoder.geocode({ 'address': address }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     var latitude = results[0].geometry.location.lat();
