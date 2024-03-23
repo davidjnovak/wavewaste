@@ -15,22 +15,31 @@ function displayDataOnMap(data) {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2ZXlub3YiLCJhIjoiY2xrajh3ZXVhMDJyazNlbnRuYWZmZWwzaSJ9.hh5Hk6_pBV84NEUVNPvMXQ'; 
     var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11', // Map style
-        zoom: 10 // Adjust based on your preference
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-98.5795, 39.8283], // Centered on the US
+        zoom: 3
     });
 
-    data.forEach(row => {
-        console.log(row)
-        if (row.ADDRESS && row['WEEKLY FEE']) {
-            const color = row['WEEKLY FEE'] === '$0' ? 'grey' : 'red';
-            console.log(color)
-            // Here you would geocode the address to get latitude and longitude
-            // For demonstration, let's assume we have lat and lng variables
+    var geocoder = new google.maps.Geocoder();
 
-            new mapboxgl.Marker({ color: color })
-                .setLngLat([lng, lat])
-                .addTo(map);
+    data.forEach(row => {
+        if (row.ADDRESS && row['WEEKLY FEE']) {
+            const address = row.ADDRESS;
+            const color = row['WEEKLY FEE'] === '$0' ? 'grey' : 'red';
+
+            geocoder.geocode({ 'address': address }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    var latitude = results[0].geometry.location.lat();
+                    var longitude = results[0].geometry.location.lng();
+
+                    // Add the marker to the Mapbox map
+                    new mapboxgl.Marker({ color: color })
+                        .setLngLat([longitude, latitude])
+                        .addTo(map);
+                } else {
+                    console.log('Geocode was not successful for the following reason: ' + status);
+                }
+            });
         }
     });
 }
- 
