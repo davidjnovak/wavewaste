@@ -24,19 +24,24 @@ function displayDataOnMap(data) {
     var count = 0
     data.forEach(row => {
         if (row.ADDRESS && row['WEEKLY FEE']) {
-            count += 1
-            console.log(count)
             const address = row.ADDRESS;
-            const color = row['WEEKLY FEE'] === '$0.00' ? 'grey' : 'red';
+            const fee = row['WEEKLY FEE'];
+            const pinSVG = fee === '$0' ? document.getElementById('grey-pin-svg').innerHTML : document.getElementById('red-pin-svg').innerHTML;
+
+            // Create a custom marker element
+            var el = document.createElement('div');
+            el.innerHTML = pinSVG;
+            // el.firstChild.setAttribute("style", "width: 24px; height: 24px;"); // Set size of SVG
+
             geocoder.geocode({ 'address': address }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     var latitude = results[0].geometry.location.lat();
                     var longitude = results[0].geometry.location.lng();
 
                     // Add the marker to the Mapbox map
-                    new mapboxgl.Marker({ color: color })
-                        .setLngLat([longitude, latitude])
-                        .addTo(map);
+                    new mapboxgl.Marker(el)
+                    .setLngLat([longitude, latitude])
+                    .addTo(map);
                 } else {
                     console.log('Geocode was not successful for the following reason: ' + status);
                 }
