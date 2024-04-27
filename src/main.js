@@ -1,11 +1,19 @@
-function handleFileUpload() {
+import { db } from "./firebase.js";
+import { collection, addDoc } from "firebase/firestore";
+
+export function handleFileUpload() {
     const fileInput = document.getElementById('csvFileInput');
     const file = fileInput.files[0];
+    const collectionRef = collection(db, "yourCollectionName"); // Define the collection reference
 
     Papa.parse(file, {
         complete: function(results) {
-            const data = results.data; // Processed CSV data
-            displayDataOnMap(data);
+          const data = results.data; // Processed CSV data
+          data.forEach(row => {
+            addDoc(collectionRef, row)
+              .then(docRef => console.log("Document written with ID:", docRef.id))
+              .catch(error => console.error("Error adding document:", error));
+          });
         },
         header: true // Assumes the first row of your CSV are headers
     });
@@ -21,7 +29,6 @@ function displayDataOnMap(data) {
     });
 
     var geocoder = new google.maps.Geocoder();
-    var count = 0
     data.forEach(row => {
         if (row.ADDRESS && row['WEEKLY FEE']) {
             const address = row.ADDRESS;
@@ -46,6 +53,10 @@ function displayDataOnMap(data) {
                     console.log('Geocode was not successful for the following reason: ' + status);
                 }
             });
+        }
+        else {
+            console.log("row missing data:")
+            console.log(row)
         }
     });
 }
